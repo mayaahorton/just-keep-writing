@@ -18,6 +18,7 @@ body {
 
 h1, h2, h3 {
   color: var(--accent);
+  text-align: center;
   margin-bottom: 0.5em;
 }
 
@@ -54,4 +55,7 @@ button:hover {
 
 textarea {
   width: 100%;
-  max-width
+  height: 500px;
+  box-sizing: border-box;
+  resize: none;
+}
