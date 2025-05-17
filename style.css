@@ -1,43 +1,57 @@
-/* Minimal style transfer from your main site */
-
-@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
+/* Color palette */
+:root {
+  --bg: #0b1a2f;
+  --bg-light: #1e2a47;
+  --accent: #7b8dad;
+  --highlight: #aab8d4;
+  --text: #edf2f7;
+  --muted: #4a5a7a;
+}
 
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  background: #0b1a2f; /* midnight */
-  color: #edf2f7;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 2rem;
   line-height: 1.6;
-  margin: 0;
-  padding: 2em;
 }
 
 h1, h2, h3 {
-  color: #7b8dad; /* sky */
+  color: var(--accent);
+  margin-bottom: 0.5em;
 }
 
 a {
-  color: #aab8d4; /* highlight */
+  color: var(--highlight);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-bottom 0.2s;
+  border-bottom: 1px dashed transparent;
+  transition: 0.3s;
 }
+
 a:hover {
-  border-bottom: 1px solid #aab8d4;
+  border-color: var(--highlight);
 }
 
 header, footer {
   text-align: center;
-  margin-bottom: 2em;
+  margin-bottom: 2rem;
 }
 
-hr {
+button, input, select {
+  font-family: inherit;
+  padding: 0.5rem 1rem;
   border: none;
-  height: 1px;
-  background: #1e2a47; /* deep blue */
-  margin: 2em 0;
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  color: var(--text);
+  margin: 0.5rem;
+  cursor: pointer;
 }
 
-main {
-  max-width: 700px;
-  margin: 0 auto;
+button:hover {
+  background-color: var(--accent);
 }
+
+textarea {
+  width: 100%;
+  max-width
