@@ -13,13 +13,29 @@
     <label>
       Session Time:
       <select id="timeSelector">
-        <option value="1">1 minute</option>
-        <option value="5" selected>5 minutes</option>
-        <option value="10">10 minutes</option>
-        <option value="15">15 minutes</option>
+        <option value="5">5 minutes</option>
+        <option value="10" selected>10 minutes</option>
+        <option value="25">25 minutes</option>
+        <option value="60">60 minutes</option>
       </select>
     </label>
 
+  <button id="startBtn">Start Writing</button>
+  <label>
+    Time limit:
+    <select id="timeSelect">
+      <option value="300">5 minutes</option>
+      <option value="600" selected>10 minutes</option>
+      <option value="1500">25 minutes</option>
+      <option value="3600">30 minutes</option>
+    </select>
+  </label>
+  <label>
+    <input type="checkbox" id="disableWarning"> Disable warnings
+  </label>
+  <button id="resetBtn" style="display:none;">Reset</button>
+</div>
+    
     <label style="margin-left: 1em;">
       <input type="checkbox" id="concentrationMode" />
       Concentration Mode (no warnings)
@@ -39,27 +55,78 @@
   <div class="status" id="summary"></div>
 
   <script>
-    const textarea = document.getElementById('writer');
-    const wordCountEl = document.getElementById('wordCount');
-    const timerEl = document.getElementById('timer');
-    const warningEl = document.getElementById('warning');
-    const resetButton = document.getElementById('resetButton');
-    const timeSelector = document.getElementById('timeSelector');
-    const concentrationMode = document.getElementById('concentrationMode');
-    const summaryEl = document.getElementById('summary');
+  const textArea = document.getElementById('writing');
+  const wordCountDisplay = document.getElementById('wordCount');
+  const timeDisplay = document.getElementById('timeRemaining');
+  const warningDisplay = document.getElementById('warning');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const timeSelect = document.getElementById('timeSelect');
+  const disableWarning = document.getElementById('disableWarning');
+  const summary = document.getElementById('summary');
 
-    let wordCount = 0;
-    let totalSeconds = 300; // default 5 mins
-    let countdown = totalSeconds;
-    let idleLimit = 5;
-    let idleTime = 0;
-    let typing = false;
-    let interval = null;
-    let startTime = null;
+  let timer, remaining, startTime;
+  let running = false;
 
-    function countWords(text) {
-      return text.trim().split(/\s+/).filter(Boolean).length;
+  function countWords(text) {
+    return (text.trim().match(/\b\w+\b/g) || []).length;
+  }
+
+  function updateStatus() {
+    const words = countWords(textArea.value);
+    wordCountDisplay.textContent = words;
+  }
+
+  function updateTime() {
+    remaining--;
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    if (remaining <= 0) {
+      clearInterval(timer);
+      textArea.disabled = true;
+      running = false;
+      resetBtn.style.display = 'inline';
+      const totalTime = (Date.now() - startTime) / 60000;
+      const words = countWords(textArea.value);
+      summary.textContent = `⏱ You wrote ${words} words in ${totalTime.toFixed(1)} minutes (${(words / totalTime).toFixed(1)} wpm).`;
+    } else if (!disableWarning.checked && remaining <= 30) {
+      warningDisplay.textContent = '⏳ Almost out of time!';
+    } else {
+      warningDisplay.textContent = '';
     }
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (running) return;
+    remaining = parseInt(timeSelect.value, 10);
+    startTime = Date.now();
+    textArea.value = '';
+    textArea.disabled = false;
+    textArea.focus();
+    timer = setInterval(() => {
+      updateStatus();
+      updateTime();
+    }, 1000);
+    running = true;
+    summary.textContent = '';
+    resetBtn.style.display = 'none';
+    updateStatus();
+    updateTime();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    textArea.value = '';
+    wordCountDisplay.textContent = '0';
+    timeDisplay.textContent = '';
+    warningDisplay.textContent = '';
+    summary.textContent = '';
+    textArea.disabled = false;
+    running = false;
+  });
+
+  textArea.addEventListener('input', updateStatus);
 
     function startSession() {
       typing = true;
