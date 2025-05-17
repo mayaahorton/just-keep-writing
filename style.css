@@ -1,88 +1,43 @@
-:root {
-  --bg: #f7f4ef;
-  --text: #333;
-  --accent: #80a1c1;
-  --accent-light: #d2e3f3;
-  --warning: #b73d3d;
-  --font-body: 'Helvetica Neue', 'Segoe UI', sans-serif;
-  --font-title: 'Georgia', serif;
-}
+/* Minimal style transfer from your main site */
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
 
 body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: #0b1a2f; /* midnight */
+  color: #edf2f7;
+  line-height: 1.6;
   margin: 0;
   padding: 2em;
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  transition: background 0.3s ease;
 }
 
-h1 {
-  font-family: var(--font-title);
-  font-size: 2.5em;
-  margin-bottom: 0.25em;
+h1, h2, h3 {
+  color: #7b8dad; /* sky */
 }
 
-p, label, .status {
-  font-size: 1.1em;
+a {
+  color: #aab8d4; /* highlight */
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom 0.2s;
+}
+a:hover {
+  border-bottom: 1px solid #aab8d4;
 }
 
-textarea {
-  width: 100%;
-  height: 300px;
-  padding: 1em;
-  font-size: 1.1em;
-  font-family: 'Courier New', Courier, monospace;
-  border: 2px solid var(--accent-light);
-  background: #fff;
-  color: var(--text);
-  box-sizing: border-box;
-  border-radius: 0.5em;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  resize: vertical;
+header, footer {
+  text-align: center;
+  margin-bottom: 2em;
 }
 
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1em;
-  margin-bottom: 1em;
-}
-
-select, input[type="checkbox"] {
-  font-size: 1em;
-}
-
-button {
-  padding: 0.5em 1em;
-  font-size: 1em;
-  background: var(--accent);
-  color: #fff;
+hr {
   border: none;
-  border-radius: 0.4em;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background 0.2s ease;
+  height: 1px;
+  background: #1e2a47; /* deep blue */
+  margin: 2em 0;
 }
 
-button:hover {
-  background: #6f91b1;
-}
-
-.status {
-  margin-top: 1em;
-}
-
-.warning {
-  color: var(--warning);
-  font-weight: bold;
-  margin-left: 1em;
-}
-
-#summary {
-  margin-top: 1em;
-  font-style: italic;
-  color: #555;
+main {
+  max-width: 700px;
+  margin: 0 auto;
 }
