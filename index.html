@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Just Keep Writing</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2em;
+      background: #fdf6e3;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 1em;
+      font-size: 1.2em;
+      font-family: monospace;
+      border: 2px solid #ccc;
+      box-sizing: border-box;
+    }
+    .status, .controls {
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    .warning {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      margin-left: 1em;
+      padding: 0.4em 1em;
+      font-size: 1em;
+    }
+    select {
+      font-size: 1em;
+      margin-left: 0.5em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Just Keep Writing!</h1>
+  <div class="controls">
+    <label>
+      Session Time:
+      <select id="timeSelector">
+        <option value="1">1 minute</option>
+        <option value="5" selected>5 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="15">15 minutes</option>
+      </select>
+    </label>
+
+    <label style="margin-left: 1em;">
+      <input type="checkbox" id="concentrationMode" />
+      Concentration Mode (no warnings)
+    </label>
+
+    <button id="resetButton">🔄 Reset</button>
+  </div>
+
+  <textarea id="writer" placeholder="Start writing..."></textarea>
+
+  <div class="status">
+    Words: <span id="wordCount">0</span> |
+    Time left: <span id="timer">--</span>s
+    <span id="warning" class="warning"></span>
+  </div>
+
+  <div class="status" id="summary"></div>
+
+  <script>
+    const textarea = document.getElementById('writer');
+    const wordCountEl = document.getElementById('wordCount');
+    const timerEl = document.getElementById('timer');
+    const warningEl = document.getElementById('warning');
+    const resetButton = document.getElementById('resetButton');
+    const timeSelector = document.getElementById('timeSelector');
+    const concentrationMode = document.getElementById('concentrationMode');
+    const summaryEl = document.getElementById('summary');
+
+    let wordCount = 0;
+    let totalSeconds = 300; // default 5 mins
+    let countdown = totalSeconds;
+    let idleLimit = 5;
+    let idleTime = 0;
+    let typing = false;
+    let interval = null;
+    let startTime = null;
+
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function startSession() {
+      typing = true;
+      countdown = totalSeconds;
+      idleTime = 0;
+      textarea.disabled = false;
+      textarea.value = '';
+      textarea.focus();
+      wordCount = 0;
+      wordCountEl.textContent = 0;
+      warningEl.textContent = '';
+      summaryEl.textContent = '';
+      startTime = Date.now();
+
+      if (interval) clearInterval(interval);
+      interval = setInterval(tick, 1000);
+    }
+
+    function tick() {
+      if (typing) {
+        countdown--;
+        timerEl.textContent = countdown;
+        if (countdown <= 0) {
+          endSession();
+        }
+      }
+
+      if (typing) {
+        idleTime++;
+        if (!concentrationMode.checked && idleTime >= idleLimit) {
+          warningEl.textContent = 'Keep writing or else...';
+        }
+      }
+    }
+
+    function endSession() {
+      clearInterval(interval);
+      typing = false;
+      textarea.disabled = true;
+      warningEl.textContent = 'Time's up!';
+      const endTime = Date.now();
+      const durationMinutes = (endTime - startTime) / 60000;
+      const finalWords = countWords(textarea.value);
+      const wpm = Math.round(finalWords / durationMinutes);
+      summaryEl.textContent = `You wrote ${finalWords} words at about ${wpm} words per minute.`;
+    }
+
+    textarea.addEventListener('input', () => {
+      wordCount = countWords(textarea.value);
+      wordCountEl.textContent = wordCount;
+      typing = true;
+      idleTime = 0;
+      warningEl.textContent = '';
+    });
+
+    resetButton.addEventListener('click', () => {
+      totalSeconds = parseInt(timeSelector.value, 10) * 60;
+      timerEl.textContent = totalSeconds;
+      startSession();
+    });
+
+    // Set initial time on load
+    window.onload = () => {
+      totalSeconds = parseInt(timeSelector.value, 10) * 60;
+      timerEl.textContent = totalSeconds;
+    };
+  </script>
+
+</body>
+</html>
