@@ -1,74 +1,78 @@
-// script.js
-
+// writing-script.js
 document.addEventListener('DOMContentLoaded', () => {
-  const textArea = document.getElementById('writing');
-  const wordCountDisplay = document.getElementById('wordCount');
-  const timeDisplay = document.getElementById('timeRemaining');
-  const warningDisplay = document.getElementById('warning');
-  const startBtn = document.getElementById('startBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const timeSelect = document.getElementById('timeSelect');
+  const textArea       = document.getElementById('writing');
+  const wordCountDisp  = document.getElementById('wordCount');
+  const timeDisp       = document.getElementById('timeRemaining');
+  const warningDisp    = document.getElementById('warning');
+  const startBtn       = document.getElementById('startBtn');
+  const resetBtn       = document.getElementById('resetBtn');
+  const timeSelect     = document.getElementById('timeSelect');
   const disableWarning = document.getElementById('disableWarning');
-  const summary = document.getElementById('summary');
+  const summary        = document.getElementById('summary');
 
-  let timer, remaining, startTime;
-  let running = false;
+  let timer, remaining, startTime, running = false;
 
   function countWords(text) {
     return (text.trim().match(/\b\w+\b/g) || []).length;
   }
 
   function updateStatus() {
-    const words = countWords(textArea.value);
-    wordCountDisplay.textContent = words;
+    wordCountDisp.textContent = countWords(textArea.value);
   }
 
   function updateTime() {
     remaining--;
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
+    const m = Math.floor(remaining/60);
+    const s = remaining % 60;
+    timeDisp.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    
     if (remaining <= 0) {
       clearInterval(timer);
       textArea.disabled = true;
       running = false;
       resetBtn.style.display = 'inline';
-      const totalTime = (Date.now() - startTime) / 60000;
+      const duration = (Date.now() - startTime) / 60000;
       const words = countWords(textArea.value);
-      summary.textContent = `⏱ You wrote ${words} words in ${totalTime.toFixed(1)} minutes (${(words / totalTime).toFixed(1)} wpm).`;
-    } else if (!disableWarning.checked && remaining <= 30) {
-      warningDisplay.textContent = '⏳ Almost out of time!';
-    } else {
-      warningDisplay.textContent = '';
+      summary.textContent = 
+        `⏱ You wrote ${words} words in ${duration.toFixed(1)} minutes ` +
+        `(${(words/duration).toFixed(1)} wpm).`;
+    }
+    else if (!disableWarning.checked && remaining <= 30) {
+      warningDisp.textContent = '⏳ Almost out of time!';
+    }
+    else {
+      warningDisp.textContent = '';
     }
   }
 
   startBtn.addEventListener('click', () => {
     if (running) return;
-    remaining = parseInt(timeSelect.value, 10);
+    remaining = parseInt(timeSelect.value,10);
     startTime = Date.now();
     textArea.value = '';
     textArea.disabled = false;
     textArea.focus();
+    summary.textContent = '';
+    resetBtn.style.display = 'none';
+
+    updateStatus();
+    updateTime();
     timer = setInterval(() => {
       updateStatus();
       updateTime();
     }, 1000);
+
     running = true;
-    summary.textContent = '';
-    resetBtn.style.display = 'none';
-    updateStatus();
-    updateTime();
   });
 
   resetBtn.addEventListener('click', () => {
+    clearInterval(timer);
     textArea.value = '';
-    wordCountDisplay.textContent = '0';
-    timeDisplay.textContent = '';
-    warningDisplay.textContent = '';
-    summary.textContent = '';
     textArea.disabled = false;
+    wordCountDisp.textContent = '0';
+    timeDisp.textContent = '–';
+    warningDisp.textContent = '';
+    summary.textContent = '';
     running = false;
   });
 
