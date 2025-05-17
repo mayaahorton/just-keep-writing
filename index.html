@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Write or Else</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2em;
+      background: #fdf6e3;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 1em;
+      font-size: 1.2em;
+      font-family: monospace;
+      border: 2px solid #ccc;
+      box-sizing: border-box;
+    }
+    .status {
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    .warning {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Just Keep Writing</h1>
+  <p>Putting the prod (back) into productivity</p>
+  <textarea id="writer" placeholder="Start..."></textarea>
+
+  <div class="status">
+    Words: <span id="wordCount">0</span> |
+    Time left: <span id="timer">60</span>s
+    <span id="warning" class="warning"></span>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('writer');
+    const wordCountEl = document.getElementById('wordCount');
+    const timerEl = document.getElementById('timer');
+    const warningEl = document.getElementById('warning');
+
+    let wordCount = 0;
+    let countdown = 60;
+    let idleLimit = 10;
+    let idleTime = 0;
+    let typing = false;
+
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    textarea.addEventListener('input', () => {
+      wordCount = countWords(textarea.value);
+      wordCountEl.textContent = wordCount;
+      typing = true;
+      idleTime = 0;
+      warningEl.textContent = '';
+    });
+
+    setInterval(() => {
+      if (typing) {
+        countdown--;
+        timerEl.textContent = countdown;
+        if (countdown <= 0) {
+          textarea.disabled = true;
+          warningEl.textContent = '⏳ Time is up!';
+          typing = false;
+        }
+      }
+
+      if (!typing) return;
+
+      idleTime++;
+      if (idleTime >= idleLimit) {
+        warningEl.textContent = 'Keep typing!';
+      }
+    }, 1000);
+  </script>
+
+</body>
+</html>
